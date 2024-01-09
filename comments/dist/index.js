@@ -50,13 +50,14 @@ router.post('/:id/comments', (req, res) => {
     const commentId = (0, crypto_1.randomBytes)(4).toString('hex');
     const { content } = req.body;
     const comments = commentsByPostId[req.params.id] || [];
-    comments.push({ id: commentId, content });
+    comments.push({ id: commentId, content, status: 'pending' });
     commentsByPostId[req.params.id] = comments;
     axios_1.default.post('http://localhost:4005/events', {
         type: 'CommentCreated',
         data: {
             id: commentId,
             content,
+            status: 'pending',
             postId: req.params.id,
         },
     });

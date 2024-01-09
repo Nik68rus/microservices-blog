@@ -1,24 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
 import { IComment } from './types/IComment';
-import axios from 'axios';
 
 interface Props {
-  postId: string;
+  comments: IComment[];
 }
 
-const CommentList = ({ postId }: Props) => {
-  const [comments, setComments] = useState<IComment[]>([]);
+const CommentList = ({ comments }: Props) => {
+  const renderCommentContent = (comment: IComment) => {
+    if (comment.status === 'pending') return 'Comment awaiting for moderation';
+    if (comment.status === 'rejected') return 'Comment was rejected';
+    return comment.content;
+  };
 
-  const fetchComments = useCallback(async () => {
-    const res = await axios.get<IComment[]>(`http://localhost:4001/posts/${postId}/comments`);
-    setComments(res.data);
-  }, [postId]);
-
-  useEffect(() => {
-    fetchComments();
-  }, [fetchComments]);
-
-  const renderedComments = comments.map(comment => <li key={comment.id}>{comment.content}</li>);
+  const renderedComments = comments.map(comment => (
+    <li key={comment.id}>{renderCommentContent(comment)}</li>
+  ));
 
   return <ul className="mb-2">{renderedComments}</ul>;
 };
